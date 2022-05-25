@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>    // compile using -lpthread
 
 // used the website : https://www.geeksforgeeks.org/queue-linked-list-implementation/ for help in the Queue implementation.
 
@@ -12,6 +13,7 @@ typedef struct Qnode{
 typedef struct Queue{
     pnode front;
     pnode rear;
+    pthread_mutex_t lock;
 } queue;
 
 pnode createNode(void* key){
@@ -43,18 +45,20 @@ void enQ(queue* q_head, void* new_node){
      * it allocate memory for the new element
      * using the createNode method.
      */
-    
+    pthread_mutex_lock(&q_head->lock);  // lock 
     pnode q_node = createNode(new_node);    // create a new node
     // in case the queue is empty
-    if (q_head->front == q_head->rear)
+    if (q_head->front == NULL)
     {
         q_head->front = q_head->rear = q_node;
+        pthread_mutex_unlock(&q_head->lock);        // release
         return;
     }
 
     // update the rear to be the new node
     q_head->rear->next = q_node;
     q_head->rear = q_node;
+    pthread_mutex_unlock(&q_head->lock);    // release
 }
 
 void* deQ(queue* q_head){
@@ -62,6 +66,8 @@ void* deQ(queue* q_head){
      * @brief this method DeQueue an element (void*) 
      * from the Queue and return its value.
      */
+
+    pthread_mutex_lock(&q_head->lock);  // lock
 
     // in case the Queue is empty, return NULL
     if (q_head->front == NULL)
@@ -81,6 +87,7 @@ void* deQ(queue* q_head){
     void* value = head->key;
     // free the memory of head as its not needed anymore
     free(head);
+    pthread_mutex_unlock(&q_head->lock);    // release
     // return the value of head.
     return value;
 }
@@ -92,6 +99,8 @@ void destroyQ(queue* q_head){
      * and eventually, it frees the Queue itself.
      */
 
+    pthread_mutex_lock(&q_head->lock);  // lock
+
     // DeQueue each element in the Queue
     while (q_head->front != NULL)
     {
@@ -99,4 +108,25 @@ void destroyQ(queue* q_head){
     }
     // finally, free the Queue itself
     free(q_head);
+}
+
+int main(){
+
+    // creates a new Queue
+    queue* q_head = createQ();
+    int * value = (int*)malloc(sizeof(int));
+    *value = 10;
+    enQ(q_head, value);
+    int * value1 = (int*)malloc(sizeof(int));
+    *value1 = 22;
+    enQ(q_head, value1);
+    void* del = deQ(q_head);
+    printf("%d\n", *(int*)del);  
+    del = deQ(q_head);
+    printf("%d\n", *(int*)del); 
+
+    free(value1);
+    free(value);
+
+    return 0;
 }

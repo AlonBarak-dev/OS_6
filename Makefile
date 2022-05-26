@@ -3,7 +3,7 @@ GCC = gcc
 FLAGS = -g -c
 LFLAGS = -lpthread
 
-all: guard singleton queue
+all: guard singleton main 
 
 guard: guard.o
 	$(CC) guard.o -o guard $(LFLAGS)
@@ -11,11 +11,11 @@ guard: guard.o
 singleton: singleton.o
 	$(CC) singleton.o -o singleton $(LFLAGS)
 
-queue: queue.o
-	$(GCC) queue.o -o queue $(LFLAGS)
-
 main: main1.o
 	$(GCC) main1.o -o main $(LFLAGS)
+
+client: client.o
+	$(GCC) client.o -o client
 
 guard.o: guard.cpp
 	$(CC) $(FLAGS) guard.cpp 
@@ -29,5 +29,8 @@ queue.o: queue.c
 main1.o: main1.c
 	$(GCC) $(FLAGS) main1.c
 
+client.o: client.c
+	$(GCC) $(FLAGS) client.c
+
 clean:
-	rm -f *.o guard singleton main
+	rm -f *.o guard singleton main 

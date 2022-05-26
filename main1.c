@@ -14,11 +14,15 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include <pthread.h>
+#include "AO.h"
 
 #define PORT "3490"  // the port users will be connecting to
 
 #define BACKLOG 10   // how many pending connections queue will hold
+
+struct arg_struct {
+    int arg1;
+};
 
 void sigchld_handler(int s)
 {
@@ -43,15 +47,22 @@ void *get_in_addr(struct sockaddr *sa)
 
 void *send_to_user(void *args)
 {
+   
+    struct arg_struct *argss = (struct arg_struct *)args;
+    int new_fd = argss->arg1;
     
-    int * actual_args = (int *)args;
-    int new_fd = *actual_args;
-    free(actual_args);
-    if (send(new_fd, "Hello, world!", 13, 0) == -1)
-        perror("send");
+    sleep(5);
+    char buffer[1024] = {0};
+    for(;;){
+        read(new_fd, buffer, 1024);
+        // do something
+        printf("%s", buffer);
+        bzero(buffer, 1024);
+    }
     
     close(new_fd);
     return NULL;
+
 }
 
 int main(void)
@@ -136,9 +147,10 @@ int main(void)
         printf("server: got connection from %s\n", s);
 
         pthread_t thread_id;
-        int *args = (int*) malloc(sizeof(int));
-        *args = new_fd;
-        pthread_create(&thread_id, NULL, send_to_user, args);
+        
+        struct arg_struct args;
+        args.arg1 = new_fd;
+        pthread_create(&thread_id, NULL, send_to_user, (void*)&args);
         
     }
 

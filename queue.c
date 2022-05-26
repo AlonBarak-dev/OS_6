@@ -112,23 +112,23 @@ void destroyQ(queue* q_head){
     free(q_head);
 }
 
-int main(){
+// int main(){
 
-    // creates a new Queue
-    queue* q_head = createQ();
-    int * value = (int*)malloc(sizeof(int));
-    *value = 10;
-    enQ(q_head, value);
-    int * value1 = (int*)malloc(sizeof(int));
-    *value1 = 22;
-    enQ(q_head, value1);
-    void* del = deQ(q_head);
-    printf("%d\n", *(int*)del);  
-    del = deQ(q_head);
-    printf("%d\n", *(int*)del); 
+//     // creates a new Queue
+//     queue* q_head = createQ();
+//     int * value = (int*)malloc(sizeof(int));
+//     *value = 10;
+//     enQ(q_head, value);
+//     int * value1 = (int*)malloc(sizeof(int));
+//     *value1 = 22;
+//     enQ(q_head, value1);
+//     void* del = deQ(q_head);
+//     printf("%d\n", *(int*)del);  
+//     del = deQ(q_head);
+//     printf("%d\n", *(int*)del); 
 
-    free(value1);
-    free(value);
+//     free(value1);
+//     free(value);
 
-    return 0;
-}
+//     return 0;
+// }

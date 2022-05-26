@@ -7,8 +7,7 @@ void destroyAO(active_object* active_);
 
 void* activate(active_object* active_){
     /**
-     * @brief this method is the pipline method.
-     * it responsible for the pipline activation, 
+     * @brief this method is the activation method. 
      * argument -> first_func(argument) -> second_func(first_func(argument)).
      * it will run as a thread as long as the active object is active.
      */

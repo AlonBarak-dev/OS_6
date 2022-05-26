@@ -14,6 +14,9 @@ singleton: singleton.o
 queue: queue.o
 	$(GCC) queue.o -o queue $(LFLAGS)
 
+main: main1.o
+	$(GCC) main1.o -o main $(LFLAGS)
+
 guard.o: guard.cpp
 	$(CC) $(FLAGS) guard.cpp 
 
@@ -22,6 +25,9 @@ singleton.o: singleton.cpp
 
 queue.o: queue.c
 	$(GCC) $(FLAGS) queue.c
+
+main1.o: main1.c
+	$(GCC) $(FLAGS) main1.c
 
 clean:
 	rm -f *.o guard singleton main

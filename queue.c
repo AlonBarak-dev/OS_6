@@ -1,20 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>    // compile using -lpthread
+#include "queue.h"
 
 // used the website : https://www.geeksforgeeks.org/queue-linked-list-implementation/ for help in the Queue implementation.
 
+pnode createNode(void* key);
+queue* createQ();
+void enQ(queue* q_head, void* new_node);
+void* deQ(queue* q_head);
+void destroyQ(queue* q_head);
 
-typedef struct Qnode{
-    void* key;
-    struct Qnode * next;
-} node, *pnode;
-
-typedef struct Queue{
-    pnode front;
-    pnode rear;
-    pthread_mutex_t lock;
-} queue;
 
 pnode createNode(void* key){
     /**
@@ -23,7 +16,8 @@ pnode createNode(void* key){
      * 
      */
     pnode n = (pnode)malloc(sizeof(node));
-    n->key = key;
+    n->key = malloc(4096);
+    memcpy(n->key, key, 4096);
     n->next = NULL;
     return n;
 }
@@ -35,6 +29,8 @@ queue* createQ(){
      */
     queue* queue_head = (queue*) malloc(sizeof(queue));
     queue_head->front = queue_head->rear = NULL;
+    pthread_cond_init(&queue_head->cond, NULL);
+    pthread_mutex_init(&queue_head->lock, NULL);
     return queue_head;
 }
 
@@ -52,6 +48,7 @@ void enQ(queue* q_head, void* new_node){
     {
         q_head->front = q_head->rear = q_node;
         pthread_mutex_unlock(&q_head->lock);        // release
+        pthread_cond_broadcast(&q_head->cond);  // broadcast message that informs the queue isn't empty
         return;
     }
 
@@ -72,7 +69,8 @@ void* deQ(queue* q_head){
     // in case the Queue is empty, return NULL
     if (q_head->front == NULL)
     {
-        return NULL;
+        // wait until the Queue isn't empty
+        pthread_cond_wait(&q_head->cond, &q_head->lock);
     }
     // enqueue the front of the queue
     pnode head = q_head->front;
@@ -106,6 +104,10 @@ void destroyQ(queue* q_head){
     {
         deQ(q_head);
     }
+    // destroy the pthreads mutex/cond
+    pthread_cond_broadcast(&q_head->cond);
+    pthread_cond_destroy(&q_head->cond);
+    pthread_mutex_destroy(&q_head->lock);
     // finally, free the Queue itself
     free(q_head);
 }

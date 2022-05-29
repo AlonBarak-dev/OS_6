@@ -110,10 +110,8 @@ void *send2client(void *args)
     struct arg_struct* argss = (struct arg_struct*)args;
     char* str_input = (char*) argss->arg2;
     int new_fd = argss->arg1;
-    //free(actual_args);
     if (send(new_fd, str_input, strlen(str_input) + 1, 0) == -1)
         perror("send");
-    
     return NULL;
 }
 

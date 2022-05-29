@@ -11,8 +11,8 @@ guard: guard.o
 singleton: singleton.o
 	$(CC) singleton.o -o singleton $(LFLAGS)
 
-main: main1.o
-	$(GCC) main1.o -o main $(LFLAGS)
+main: main1.o queue.o AO.o
+	$(GCC) main1.o queue.o AO.o -o main $(LFLAGS)
 
 client: client.o
 	$(GCC) client.o -o client
@@ -25,6 +25,9 @@ singleton.o: singleton.cpp
 
 queue.o: queue.c
 	$(GCC) $(FLAGS) queue.c
+
+AO.o: AO.c
+	$(GCC) $(FLAGS) AO.c
 
 main1.o: main1.c
 	$(GCC) $(FLAGS) main1.c

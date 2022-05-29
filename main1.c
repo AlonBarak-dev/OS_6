@@ -19,7 +19,12 @@
 #define PORT "3490"  // the port users will be connecting to
 
 #define BACKLOG 10   // how many pending connections queue will hold
-
+void enQ(queue* q_head, void* new_node);
+void* deQ(queue* q_head);
+void destroyQ(queue* q_head);
+void* activate(active_object*);
+active_object* newAO(queue* args_queue, void*, void*);
+void destroyAO(active_object* active_);
 
 // define active objects and their respective queues.
 queue* _first_q;
@@ -32,6 +37,7 @@ active_object* _third_ao;
 
 struct arg_struct {
     int arg1;
+    char* arg2;
 };
 
 
@@ -44,8 +50,8 @@ void* ceasar_chiper(void* args){
      * @brief this method apply the Ceasar chiper on args.
      * e.g. helLO -> ifmMP
      */
-    
-    char* str_input = (char*) args;
+    struct arg_struct* argss = (struct arg_struct*)args;
+    char* str_input = (char*) argss->arg2;
     printf("%s", str_input);
     while(*str_input != '\n'){
 
@@ -57,12 +63,17 @@ void* ceasar_chiper(void* args){
         }
         str_input++;
     }
+    return argss;
 }
 
 void* upper_lower(void* args){
+    /**
+     * @brief this method change lower case letters to upper case
+     * and vice verca.
+     */
 
-    char* str_input = (char*) args;
-    printf("%s", str_input);
+    struct arg_struct* argss = (struct arg_struct*)args;
+    char* str_input = (char*) argss->arg2;
     while(*str_input != '\n'){
 
         if (*str_input >= 65 && *str_input <= 90)
@@ -76,8 +87,36 @@ void* upper_lower(void* args){
         }
         str_input++;
     }
-    printf("%s", (char*)args);
+    printf("%s", (char*)argss->arg2);
+    return argss;
 }
+
+void* default_func(void* args){
+    return args;
+}
+
+void* move2second(void* args){
+    enQ(_second_q, args);
+    return args;
+}
+
+void* move2third(void* args){
+    enQ(_third_q, args);
+    return args;
+}
+
+void *send2client(void *args)
+{
+    struct arg_struct* argss = (struct arg_struct*)args;
+    char* str_input = (char*) argss->arg2;
+    int new_fd = argss->arg1;
+    //free(actual_args);
+    if (send(new_fd, str_input, strlen(str_input) + 1, 0) == -1)
+        perror("send");
+    
+    return NULL;
+}
+
 
 
 void sigchld_handler(int s)
@@ -107,13 +146,15 @@ void *handle_client(void *args)
     struct arg_struct *argss = (struct arg_struct *)args;
     int new_fd = argss->arg1;
     
-    sleep(5);
     char buffer[1024] = {0};
     for(;;){
         read(new_fd, buffer, 1024);
-        // do something
-        ceasar_chiper(buffer);
-        upper_lower(buffer);
+        if (strlen(buffer) > 0)
+        {
+            argss->arg2 = (char*)malloc(strlen(buffer)+1);
+            memcpy(argss->arg2, buffer, strlen(buffer));
+            enQ(_first_q, argss);
+        }
         bzero(buffer, 1024);
     }
     
@@ -124,6 +165,13 @@ void *handle_client(void *args)
 
 int main(void)
 {
+
+    _first_q = createQ();
+    _first_ao = newAO(_first_q, ceasar_chiper, move2second);
+    _second_q = createQ();
+    _second_ao = newAO(_second_q, upper_lower, move2third);
+    _third_q = createQ();
+    _third_ao = newAO(_third_q, default_func, send2client);
     int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
     struct addrinfo *servinfo, *p;
     struct addrinfo hints;

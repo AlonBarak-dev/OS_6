@@ -36,28 +36,16 @@ int main(int argc, char const* argv[])
 		printf("\nConnection Failed \n");
 		return -1;
 	}
-    char command[1024] = {0};
+    char command[4096] = {0};
     while (1)
     {
         printf("Please enter a command:\n");
-        fgets(command,1024 ,stdin);
+        fgets(command,4096 ,stdin);
         send(sock, command, strlen(command), 0);
-        if (strncmp(command, "TOP",3) == 0)
-        {
-			bzero(command, 1024);
-            recv(sock, command, 1024,0);
-			if (strcmp(command, "-") == 0)
-			{
-				printf("OUTPUT:\n");
-			}
-			else{
-				printf("OUTPUT:%s\n", command);
-			}
-        }
-		else if(strncmp(command, "EXIT", 4) == 0){
-			break;
-		}
-        bzero(command, 1024);
+		bzero(command, 4096);
+        recv(sock, command, 4096, 0);
+		printf("%s", command);
+        bzero(command, 4096);
 		sleep(1);
     }
     

@@ -15,8 +15,9 @@ pnode createNode(void* key){
      * it initialize it with the given key and set its next to NULL.
      * 
      */
+    char* tmp = (char*) key;
     pnode n = (pnode)malloc(sizeof(node));
-    n->key = malloc(4096);
+    n->key = (char*)malloc(4096);
     memcpy(n->key, key, 4096);
     n->next = NULL;
     return n;
@@ -65,7 +66,6 @@ void* deQ(queue* q_head){
      */
 
     pthread_mutex_lock(&q_head->lock);  // lock
-
     // in case the Queue is empty, return NULL
     if (q_head->front == NULL)
     {

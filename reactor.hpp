@@ -6,7 +6,7 @@ class Reactor{
     private:
         Reactor(){}
         ~Reactor(){
-            free(this->p_id);
+            // free(this->p_id);
             delete this;
         }
     

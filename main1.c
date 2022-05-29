@@ -16,7 +16,7 @@
 #include <signal.h>
 #include "AO.h"
 
-#define PORT "3490"  // the port users will be connecting to
+#define PORT "3491"  // the port users will be connecting to
 
 #define BACKLOG 10   // how many pending connections queue will hold
 void enQ(queue* q_head, void* new_node);

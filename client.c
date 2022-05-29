@@ -30,7 +30,6 @@ int main(int argc, char const* argv[])
 			"\nInvalid address/ Address not supported \n");
 		return -1;
 	}
-
 	if (connect(sock, (struct sockaddr*)&serv_addr,
 				sizeof(serv_addr))
 		< 0) {
@@ -38,7 +37,6 @@ int main(int argc, char const* argv[])
 		return -1;
 	}
     char command[1024] = {0};
-	sleep(3);
     while (1)
     {
         printf("Please enter a command:\n");

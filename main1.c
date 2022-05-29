@@ -20,9 +20,46 @@
 
 #define BACKLOG 10   // how many pending connections queue will hold
 
+
+// define active objects and their respective queues.
+queue* _first_q;
+queue* _second_q;
+queue* _third_q;
+active_object* _first_ao;
+active_object* _second_ao;
+active_object* _third_ao;
+
+
 struct arg_struct {
     int arg1;
 };
+
+
+/**
+ * @brief first and second functions.
+ */
+
+void* first_func(void* args){
+    /**
+     * @brief this method apply the Ceasar chiper on args.
+     * e.g. helLO -> ifmMP
+     */
+    
+    char* str_input = (char*) args;
+    printf("%s", str_input);
+    while(*str_input != '\n'){
+
+        if(*str_input == 90 || *str_input == 122){
+            (*str_input) -= 25;
+        }
+        else{
+            (*str_input)++;
+        }
+        str_input++;
+    }
+
+}
+
 
 void sigchld_handler(int s)
 {
@@ -45,7 +82,7 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-void *send_to_user(void *args)
+void *handle_client(void *args)
 {
    
     struct arg_struct *argss = (struct arg_struct *)args;
@@ -56,7 +93,7 @@ void *send_to_user(void *args)
     for(;;){
         read(new_fd, buffer, 1024);
         // do something
-        printf("%s", buffer);
+        first_func(buffer);
         bzero(buffer, 1024);
     }
     
@@ -150,7 +187,7 @@ int main(void)
         
         struct arg_struct args;
         args.arg1 = new_fd;
-        pthread_create(&thread_id, NULL, send_to_user, (void*)&args);
+        pthread_create(&thread_id, NULL, handle_client, (void*)&args);
         
     }
 

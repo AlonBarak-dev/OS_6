@@ -3,7 +3,7 @@ GCC = gcc
 FLAGS = -g -c
 LFLAGS = -lpthread
 
-all: guard singleton main 
+all: guard singleton main client
 
 guard: guard.o
 	$(CC) guard.o -o guard $(LFLAGS)

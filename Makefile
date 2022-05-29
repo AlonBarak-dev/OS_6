@@ -2,6 +2,7 @@ CC = clang++-9
 GCC = gcc
 FLAGS = -g -c
 LFLAGS = -lpthread
+OBJECTS = guard.o singleton.o queue.o AO.o main1.o client.o pollServer.o reactor.o
 
 all: guard singleton main client pollserver 
 
@@ -38,11 +39,14 @@ main1.o: main1.c
 client.o: client.c
 	$(GCC) $(FLAGS) client.c
 
-pollserver.o: pollServer.cpp
+pollServer.o: pollServer.cpp
 	$(CC) $(FLAGS) pollServer.cpp
 
 reactor.o: reactor.cpp
 	$(CC) $(FLAGS) reactor.cpp
+
+OS6: $(OBJECTS)
+	gcc --shared -fPIC -pthread $(OBJECTS)
 
 clean:
 	rm -f *.o guard singleton main pollserver client

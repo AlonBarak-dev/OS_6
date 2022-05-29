@@ -39,7 +39,7 @@ struct arg_struct {
  * @brief first and second functions.
  */
 
-void* first_func(void* args){
+void* ceasar_chiper(void* args){
     /**
      * @brief this method apply the Ceasar chiper on args.
      * e.g. helLO -> ifmMP
@@ -57,7 +57,26 @@ void* first_func(void* args){
         }
         str_input++;
     }
+}
 
+void* upper_lower(void* args){
+
+    char* str_input = (char*) args;
+    printf("%s", str_input);
+    while(*str_input != '\n'){
+
+        if (*str_input >= 65 && *str_input <= 90)
+        {
+            // lower case - upper case
+            (*str_input) += 32;
+        }
+        else{
+            // upper case -> lower case
+            (*str_input) -= 32;
+        }
+        str_input++;
+    }
+    printf("%s", (char*)args);
 }
 
 
@@ -93,7 +112,8 @@ void *handle_client(void *args)
     for(;;){
         read(new_fd, buffer, 1024);
         // do something
-        first_func(buffer);
+        ceasar_chiper(buffer);
+        upper_lower(buffer);
         bzero(buffer, 1024);
     }
     

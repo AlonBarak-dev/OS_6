@@ -81,3 +81,20 @@ make all
 ```
 
 
+## How to Build the Shared Library:
+```ruby
+make OS6
+```
+
+## External Resources: <br>
+
+- https://beej.us <br>
+- https://www.geeksforgeeks.org/queue-linked-list-implementation/  <br>
+
+
+
+### P.S. 
+Please ignore the warnings & errors during the Compilation of the Shared Library, it Occours because of the multiple defenitions of Main.<br>
+One can just comment the mains and Compile the Shared Library. <br>
+Also, please ignore any warnings during Compilation, Thanks.
+
